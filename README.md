@@ -1,6 +1,6 @@
 # Node.js + Express.js Authentication API Boilerplate
 
-This is a project meant to be used as a starting point for APIs that require user sign up/sign in and authentication.
+This is a project meant to be used as a starting point for APIs that require user sign up/sign in and authentication. Meant to be consumed by a SPA.
 
 TODO:
 
