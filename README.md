@@ -32,3 +32,9 @@ To run project locally:
 4.  Client includes cookie on subsequent requests.
 5.  Protected endpoints send request through authentication middleware, which checks token received in request to exist in database and have a status of 'valid'. Only endpoints that use the authentication in this project are the api/users/me and api/users/logout, to be used as examples of how it would work
 6.  To logout, client would send request to api/users/logout with their auth token. If token exists and is valid, set its status as 'expired'
+
+## License
+
+[MIT](https://github.com/ylorenzana/node-express-api-auth/blob/master/LICENSE)
+
+Feedback and PR's welcome. Follow me [@yanglorenzana](https://twitter.com/yanglorenzana), DM's always open.
