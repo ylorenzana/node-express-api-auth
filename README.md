@@ -21,7 +21,7 @@ To run project locally:
 - Clone repo
 - `npm install` in root directory
 - Add your mongoDB uri to `secrets.js` file or add it to your ENV variables
-- `npm start` to run nodemon in watch modes
+- `npm start` to run nodemon in watch mode
 - Use [postman](https://https://www.getpostman.com/) to test endpoints or curl if you're cool
 
 ## Overview of auth system:
