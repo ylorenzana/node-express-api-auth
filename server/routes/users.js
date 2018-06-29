@@ -123,8 +123,10 @@ router.get('/me', authenticate, async (req, res) => {
 
 router.get('/logout', authenticate, async (req, res) => {
   try {
-    await req.session.expireToken(req.session.token);
+    const { session } = req;
+    await session.expireToken(session.token);
     res.clearCookie('token');
+
     res.json({
       title: 'Logout Successful',
       detail: 'Successfuly expired login session',

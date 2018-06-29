@@ -1,12 +1,12 @@
 # Node.js + Express.js Authentication API Boilerplate
 
-This is a project meant to be used as a starting point for APIs that require user sign up/sign in and authentication. Meant to be consumed by a SPA.
+This is a project meant to be used as a starting point for APIs that require user sign up/sign in and authentication. Meant to be consumed by a SPA. **This is a WIP**, if you find any issues or concerns with the security of the implementation, please, open a new issue or contact me directly [@yanglorenzana](https://twitter.com/yanglorenzana) on Twitter. PR's are of course, also welcome!
 
 TODO:
 
 - Currently researching and working on a password reset mechanism
 - Another security mechanism against CSRF.
-- Throttle requests
+- Request throttling
 
 Tried following [json:api](http://jsonapi.org/) specification for the design of the API for the error responses, but didn't get a good example for other response objects.
 
