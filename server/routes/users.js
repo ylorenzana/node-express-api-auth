@@ -25,6 +25,7 @@ router.post('/register', async (req, res) => {
         maxAge: 1209600000,
         // secure: true, This option would be set to true in production.
       })
+      .status(201)
       .json({
         title: 'User Registration Successful',
         detail: 'Successfully registered new user',
@@ -45,22 +46,22 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    const userId = user._id;
-    if (!user) {
-      res.status(401).json({
+    if (typeof email !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({
         errors: [
           {
-            title: 'Invalid credentials',
-            detail: 'Email is not registered',
+            title: 'Bad Request',
+            detail: 'Email and password must be strings',
           },
         ],
       });
     }
+    const user = await User.findOne({ email });
+    const userId = user._id;
 
     const passwordValidated = await bcrypt.compare(password, user.password);
     if (!passwordValidated) {
-      res.status(401).json({
+      return res.status(401).json({
         errors: [
           {
             title: 'Invalid credentials',
@@ -86,11 +87,11 @@ router.post('/login', async (req, res) => {
         detail: 'Successfully validated user credentials',
       });
   } catch (err) {
-    res.status(500).json({
+    res.status(401).json({
       errors: [
         {
-          title: 'Server Error',
-          detail: 'Something went wrong with your request',
+          title: 'Invalid Credentials',
+          detail: 'That email has not been registered',
           errorMessage: err,
         },
       ],
