@@ -91,7 +91,7 @@ router.post('/login', async (req, res) => {
       errors: [
         {
           title: 'Invalid Credentials',
-          detail: 'That email has not been registered',
+          detail: 'Check email and password combination',
           errorMessage: err,
         },
       ],
