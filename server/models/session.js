@@ -8,9 +8,15 @@ const SessionSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
+  csrfToken: {
+    type: String,
+    unique: true,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
+    expires: 1000,
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,

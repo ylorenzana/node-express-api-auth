@@ -4,19 +4,21 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const Session = require('../models/session');
 const { authenticate } = require('../middleware/authenticate');
-
+const { csrfCheck } = require('../middleware/csrfCheck');
+const { initSession, isEmail } = require('../utils/utils');
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
+    if (!isEmail(email)) {
+      throw new Error('Email provided is invalid');
+    }
     const user = new User({ email, password });
     const persistedUser = await user.save();
     const userId = persistedUser._id;
 
-    const token = await Session.generateToken();
-    const session = new Session({ token, userId });
-    await session.save();
+    const session = await initSession(userId);
 
     res
       .cookie('token', session.token, {
@@ -29,6 +31,7 @@ router.post('/register', async (req, res) => {
       .json({
         title: 'User Registration Successful',
         detail: 'Successfully registered new user',
+        csrfToken: session.csrfToken,
       });
   } catch (err) {
     res.status(400).json({
@@ -36,7 +39,7 @@ router.post('/register', async (req, res) => {
         {
           title: 'Registration Error',
           detail: 'Something went wrong during registration process.',
-          errorMessage: err,
+          errorMessage: err.message,
         },
       ],
     });
@@ -71,9 +74,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    const token = await Session.generateToken();
-    const session = new Session({ token, userId });
-    await session.save();
+    const session = await initSession(userId);
 
     res
       .cookie('token', session.token, {
@@ -85,6 +86,7 @@ router.post('/login', async (req, res) => {
       .json({
         title: 'Login Successful',
         detail: 'Successfully validated user credentials',
+        csrfToken: session.csrfToken,
       });
   } catch (err) {
     res.status(401).json({
@@ -92,14 +94,14 @@ router.post('/login', async (req, res) => {
         {
           title: 'Invalid Credentials',
           detail: 'Check email and password combination',
-          errorMessage: err,
+          errorMessage: err.message,
         },
       ],
     });
   }
 });
 
-router.get('/me', authenticate, async (req, res) => {
+router.get('/me', authenticate, csrfCheck, async (req, res) => {
   try {
     const { userId } = req.session;
     const user = await User.findById({ _id: userId }, { email: 1, _id: 0 });
@@ -115,7 +117,7 @@ router.get('/me', authenticate, async (req, res) => {
         {
           title: 'Unauthorized',
           detail: 'Not authorized to access this route',
-          errorMessage: err,
+          errorMessage: err.message,
         },
       ],
     });
@@ -138,7 +140,7 @@ router.get('/logout', authenticate, async (req, res) => {
         {
           title: 'Logout Failed',
           detail: 'Something went wrong during the logout process.',
-          errorMessage: err,
+          errorMessage: err.message,
         },
       ],
     });
