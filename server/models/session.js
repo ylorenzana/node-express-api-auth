@@ -16,7 +16,6 @@ const SessionSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-    expires: 1000,
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -40,6 +39,10 @@ SessionSchema.statics.generateToken = function() {
       resolve(token);
     });
   });
+};
+
+SessionSchema.statics.expireAllTokensForUser = function(userId) {
+  return this.updateMany({ userId }, { $set: { status: 'expired' } });
 };
 
 SessionSchema.methods.expireToken = function() {

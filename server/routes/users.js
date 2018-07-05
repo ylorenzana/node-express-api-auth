@@ -11,8 +11,8 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!isEmail(email)) {
-      throw new Error('Email provided is invalid');
+    if (!isEmail(email) || typeof password !== 'string') {
+      throw new Error('Email and/or password provided are invalid');
     }
     const user = new User({ email, password });
     const persistedUser = await user.save();
@@ -25,7 +25,7 @@ router.post('/register', async (req, res) => {
         httpOnly: true,
         sameSite: true,
         maxAge: 1209600000,
-        // secure: true, This option would be set to true in production.
+        secure: process.env.NODE_ENV === 'production',
       })
       .status(201)
       .json({
@@ -49,29 +49,25 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (typeof email !== 'string' || typeof password !== 'string') {
+    if (!isEmail(email) || typeof password !== 'string') {
       return res.status(400).json({
         errors: [
           {
             title: 'Bad Request',
-            detail: 'Email and password must be strings',
+            detail: 'Email must be valid and password must be a string',
           },
         ],
       });
     }
     const user = await User.findOne({ email });
+    if (!user) {
+      throw new Error();
+    }
     const userId = user._id;
 
     const passwordValidated = await bcrypt.compare(password, user.password);
     if (!passwordValidated) {
-      return res.status(401).json({
-        errors: [
-          {
-            title: 'Invalid credentials',
-            detail: 'Check email and password combination',
-          },
-        ],
-      });
+      throw new Error();
     }
 
     const session = await initSession(userId);
@@ -81,7 +77,7 @@ router.post('/login', async (req, res) => {
         httpOnly: true,
         sameSite: true,
         maxAge: 1209600000,
-        // secure: true, Option would be set to true in production
+        secure: process.env.NODE_ENV === 'production',
       })
       .json({
         title: 'Login Successful',
@@ -101,7 +97,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/me', authenticate, csrfCheck, async (req, res) => {
+router.get('/me', authenticate, async (req, res) => {
   try {
     const { userId } = req.session;
     const user = await User.findById({ _id: userId }, { email: 1, _id: 0 });
@@ -124,7 +120,50 @@ router.get('/me', authenticate, csrfCheck, async (req, res) => {
   }
 });
 
-router.get('/logout', authenticate, async (req, res) => {
+router.delete('/me', authenticate, csrfCheck, async (req, res) => {
+  try {
+    const { session } = req;
+    const { userId } = session;
+    const { email, password } = req.body;
+    if (!isEmail(email) || typeof password !== 'string') {
+      throw new Error();
+    }
+
+    const user = await User.findById({ _id: userId });
+    if (user.email !== email) {
+      await session.expireToken(session.token);
+      res.clearCookie('token');
+      throw new Error(
+        'Credentials provided do not match current active session. Your sessions has now been expired.'
+      );
+    }
+
+    const passwordValidated = await bcrypt.compare(password, user.password);
+    if (!passwordValidated) {
+      throw new Error();
+    }
+
+    await Session.expireAllTokensForUser(userId);
+    res.clearCookie('token');
+    await User.findByIdAndDelete({ _id: userId });
+    res.json({
+      title: 'Account Deleted',
+      detail: 'Account with credentials provided has been successfuly deleted',
+    });
+  } catch (err) {
+    res.status(401).json({
+      errors: [
+        {
+          title: 'Invalid Credentials',
+          detail: 'Check email and password combination',
+          errorMessage: err.message,
+        },
+      ],
+    });
+  }
+});
+
+router.put('/logout', authenticate, csrfCheck, async (req, res) => {
   try {
     const { session } = req;
     await session.expireToken(session.token);
