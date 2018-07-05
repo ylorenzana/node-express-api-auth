@@ -43,7 +43,7 @@ To run project locally:
 6.  Protected routes use `csrfCheck` middleware. This middleware should be added to any route that would change state. The csrfCheck for the delete user route is somewhat redundant as it requires the user to provide credentials, but I included it to serve as example.
 
 An example of login route response and placing the csrf-token in headers:
-[A screenshot of a Postman response to login route along with placing the csrf-token in headers](./postman-example.PNG)
+[A screenshot of a Postman response to login route along with placing the csrf-token in headers](<[![postman-example.png](https://s33.postimg.cc/6723bdo8v/postman-example.png)](https://postimg.cc/image/wfd80r8cb/)>)
 
 ## License
 
