@@ -5,9 +5,13 @@ const authenticate = async (req, res, next) => {
   try {
     const { token } = req.cookies;
     if (typeof token !== 'string') {
-      throw new Error();
+      throw new Error('Request cookie is invalid.');
     }
     const session = await Session.findOne({ token, status: 'valid' });
+    if (!session) {
+      res.clearCookie('token');
+      throw new Error('Your session has expired. You need to log in.');
+    }
     req.session = session;
     next();
   } catch (err) {
@@ -16,7 +20,7 @@ const authenticate = async (req, res, next) => {
         {
           title: 'Unauthorized',
           detail: 'Authentication credentials invalid',
-          errorMessage: err,
+          errorMessage: err.message,
         },
       ],
     });

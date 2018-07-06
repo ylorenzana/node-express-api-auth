@@ -8,6 +8,11 @@ const SessionSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
+  csrfToken: {
+    type: String,
+    unique: true,
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -34,6 +39,10 @@ SessionSchema.statics.generateToken = function() {
       resolve(token);
     });
   });
+};
+
+SessionSchema.statics.expireAllTokensForUser = function(userId) {
+  return this.updateMany({ userId }, { $set: { status: 'expired' } });
 };
 
 SessionSchema.methods.expireToken = function() {
