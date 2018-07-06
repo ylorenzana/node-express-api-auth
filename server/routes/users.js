@@ -11,8 +11,11 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!isEmail(email) || typeof password !== 'string') {
-      throw new Error('Email and/or password provided are invalid');
+    if (!isEmail(email)) {
+      throw new Error('Email must be a valid email address.');
+    }
+    if (typeof password !== 'string') {
+      throw new Error('Password must be a string.');
     }
     const user = new User({ email, password });
     const persistedUser = await user.save();
@@ -49,12 +52,22 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!isEmail(email) || typeof password !== 'string') {
+    if (!isEmail(email)) {
       return res.status(400).json({
         errors: [
           {
             title: 'Bad Request',
-            detail: 'Email must be valid and password must be a string',
+            detail: 'Email must be a valid email address',
+          },
+        ],
+      });
+    }
+    if (typeof password !== 'string') {
+      return res.status(400).json({
+        errors: [
+          {
+            title: 'Bad Request',
+            detail: 'Password must be a string',
           },
         ],
       });
