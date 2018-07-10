@@ -1,18 +1,26 @@
 # Node.js + Express.js Authentication API Boilerplate
 
-This is a project meant to be used as a starting point for APIs that require user sign up/sign in and authentication. Meant to be consumed by a SPA. **This is a WIP**, if you find any issues or concerns with the security of the implementation, please, open a new issue or contact me directly [@yanglorenzana](https://twitter.com/yanglorenzana) on Twitter. PR's are of course, also welcome!
+This is a project meant to be used as a starting point for APIs that require user registration and single sign-on. Single sign-on is showcased with protected routes that pass through authentication middleware. API is designed to be consumed by a SPA.
 
-TODO:
+**This is a WIP**, if you find any issues or concerns with the security of the implementation, please, open a new issue or contact me directly [@yanglorenzana](https://twitter.com/yanglorenzana) on Twitter.
 
-- Currently researching and working on a password reset mechanism
+> Read the [tutorial series](https://www.ylorenzana.rocks/nodejs-api-authentication-tutorial-pt-1/) for this project if you'd like a more detailed explanation and walkthrough.
+
+### WIP:
+
+- Password reset mechanism
+- Account lockout after too many unsuccessful login attempts
 - ~~Another security mechanism against CSRF~~ :heavy_check_mark:
+
+### TODO:
+
 - Request throttling
 
 Tried following [json:api](http://jsonapi.org/) specification for the design of the API for the error responses, but didn't get a good example for other response objects.
 
-The auth system uses 16 random bytes generated with the node.js crypto module as authentication tokens.
+Project uses [mongoose](http://mongoosejs.com/) for data modeling and [express.js](https://expressjs.com/) for easy server setup.
 
-Project uses mongoose.js for data modeling and express.js for easy server setup.
+The auth system uses 16 random bytes generated with the [node.js crypto module](https://nodejs.org/api/crypto.html#crypto_crypto_randombytes_size_callback) as authentication tokens.
 
 ## Project Setup
 
@@ -30,8 +38,8 @@ To run project locally:
 2.  User enters credentials, server validates credentials. If valid, a random 16 byte token is generated and stored in database along with the user ID of the requesting user
 3.  Token is set in a cookie along with the server's response
 4.  Client includes cookie on subsequent requests.
-5.  Protected endpoints send request through authentication middleware, which checks token received in request to exist in database and have a status of 'valid'. Only endpoints that use the authentication in this project are the api/users/me and api/users/logout, to be used as examples of how it would work
-6.  To logout, client would send request to api/users/logout with their auth token. If token exists and is valid, set its status as 'expired'
+5.  Protected endpoints send request through authentication middleware, which checks token received in request to exist in database and have a status of 'valid'. The endpoints that use the authentication in this project are the GET/DELETE api/users/me and PUT api/users/logout. Meant to serve as examples of how it would work
+6.  To logout, client would send request to api/users/logout with their auth token. If token exists and is valid, set session status as 'expired'
 
 ### CSRF Protection
 
@@ -49,5 +57,7 @@ An example of login route response and placing the csrf-token in headers:
 ## License
 
 [MIT](https://github.com/ylorenzana/node-express-api-auth/blob/master/LICENSE)
+
+---
 
 Feedback and PR's welcome. Follow me [@yanglorenzana](https://twitter.com/yanglorenzana), DM's always open.

@@ -6,6 +6,7 @@ const Session = require('../models/session');
 const { authenticate } = require('../middleware/authenticate');
 const { csrfCheck } = require('../middleware/csrfCheck');
 const { initSession, isEmail } = require('../utils/utils');
+
 const router = express.Router();
 
 router.post('/register', async (req, res) => {

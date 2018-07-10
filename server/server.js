@@ -13,7 +13,6 @@ mongoose.connect(getSecret('dbUri')).then(
   },
   (err) => console.log('Error connecting to mongoDB', err)
 );
-const db = mongoose.connection;
 
 const app = express();
 const port = process.env.PORT || 3000;
