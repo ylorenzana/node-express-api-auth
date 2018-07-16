@@ -136,21 +136,12 @@ router.get('/me', authenticate, async (req, res) => {
 
 router.delete('/me', authenticate, csrfCheck, async (req, res) => {
   try {
-    const { session } = req;
-    const { userId } = session;
-    const { email, password } = req.body;
-    if (!isEmail(email) || typeof password !== 'string') {
+    const { userId } = req.session;
+    const { password } = req.body;
+    if (typeof password !== 'string') {
       throw new Error();
     }
-
     const user = await User.findById({ _id: userId });
-    if (user.email !== email) {
-      await session.expireToken(session.token);
-      res.clearCookie('token');
-      throw new Error(
-        'Credentials provided do not match current active session. Your sessions has now been expired.'
-      );
-    }
 
     const passwordValidated = await bcrypt.compare(password, user.password);
     if (!passwordValidated) {
