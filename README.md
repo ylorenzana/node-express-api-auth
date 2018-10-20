@@ -1,6 +1,6 @@
 # Node.js + Express.js Authentication API Boilerplate
 
-This is a project meant to be used as a starting point for APIs that require user registration and single sign-on. Single sign-on is showcased with protected routes that pass through authentication middleware. API is designed to be consumed by a SPA.
+This is a project meant to be used as a starting point for APIs that require user authentication (registration and sign on). Sign on sessions are showcased with protected routes that pass through authentication middleware. API is designed to be consumed by a SPA.
 
 **This is a WIP**, if you find any issues or concerns with the security of the implementation, please, open a new issue or contact me directly [@yanglorenzana](https://twitter.com/yanglorenzana) on Twitter.
 
