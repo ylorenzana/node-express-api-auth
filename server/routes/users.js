@@ -9,8 +9,24 @@ const { initSession, isEmail } = require('../utils/utils');
 
 const router = express.Router();
 
+
+
+// POST REQUEST
+// Registers user
+// http://localhost:3000/api/users/register
+// REQ: {
+//        "email":"user@gmail.com",
+//        "password":"thisisapassword!"
+//      }
+// RES: {
+//         "title": "User Registration Successful",
+//         "detail": "Successfully registered new user",
+//         "csrfToken": "b151b06ece52c5e4db1ae7b52a34dd89"
+//      }
+
 router.post('/register', async (req, res) => {
   try {
+    console.log(req.body.email)
     const { email, password } = req.body;
     if (!isEmail(email)) {
       throw new Error('Email must be a valid email address.');
@@ -49,6 +65,19 @@ router.post('/register', async (req, res) => {
     });
   }
 });
+
+// POST REQUEST
+// Log in user
+// http://localhost:3000/api/users/login
+// REQ: {
+//        "email":"user@gmail.com",
+//        "password":"thisisapassword!"
+//      }
+// RES: {
+//        "title": "Login Successful",
+//        "detail": "Successfully validated user credentials",
+//        "csrfToken": "cbe03d62810ccf548e7c5a887f5090d2"
+//      }
 
 router.post('/login', async (req, res) => {
   try {
@@ -111,6 +140,20 @@ router.post('/login', async (req, res) => {
   }
 });
 
+// GET REQUEST
+// gets user info
+// http://localhost:3000/api/users/me
+// HEADERS:
+//  Content-Type: application/json
+//  csrfToken: cbe03d62810ccf548e7c5a887f5090d2
+// RES: {
+//        "title": "Authentication successful",
+//        "detail": "Successfully authenticated user",
+//        "user": {
+//          "email": "user@gmail.com"
+//        }
+//      }
+
 router.get('/me', authenticate, async (req, res) => {
   try {
     const { userId } = req.session;
@@ -133,6 +176,20 @@ router.get('/me', authenticate, async (req, res) => {
     });
   }
 });
+
+// DELETE REQUEST
+// delete logged in user
+// http://localhost:3000/api/users/me
+// HEADERS:
+//  Content-Type: application/json
+//  csrf-token: cbe03d62810ccf548e7c5a887f5090d2
+// REQ: {
+//        "password":"thisisapassword"
+//      }
+// RES: {
+//        "title": "Account Deleted",
+//        "detail": "Account with credentials provided has been successfuly deleted"
+//      }
 
 router.delete('/me', authenticate, csrfCheck, async (req, res) => {
   try {
@@ -168,9 +225,21 @@ router.delete('/me', authenticate, csrfCheck, async (req, res) => {
   }
 });
 
+// PUT REQUEST
+// Log out user
+// http://localhost:3000/api/users/logout
+// HEADERS:
+//  Content-Type: application/json
+//  csrf-token: cbe03d62810ccf548e7c5a887f5090d2
+// RES: {
+//        "title": "Logout Successful",
+//        "detail": "Successfuly expired login session"
+//      }
+
 router.put('/logout', authenticate, csrfCheck, async (req, res) => {
   try {
     const { session } = req;
+    console.log(session);
     await session.expireToken(session.token);
     res.clearCookie('token');
 
