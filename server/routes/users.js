@@ -26,7 +26,6 @@ const router = express.Router();
 
 router.post('/register', async (req, res) => {
   try {
-    console.log(req.body.email)
     const { email, password } = req.body;
     if (!isEmail(email)) {
       throw new Error('Email must be a valid email address.');
@@ -239,7 +238,6 @@ router.delete('/me', authenticate, csrfCheck, async (req, res) => {
 router.put('/logout', authenticate, csrfCheck, async (req, res) => {
   try {
     const { session } = req;
-    console.log(session);
     await session.expireToken(session.token);
     res.clearCookie('token');
 
