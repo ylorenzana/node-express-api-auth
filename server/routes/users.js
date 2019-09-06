@@ -115,11 +115,11 @@ router.get('/me', authenticate, async (req, res) => {
   try {
     const { userId } = req.session;
     const user = await User.findById({ _id: userId }, { email: 1, _id: 0 });
-
     res.json({
       title: 'Authentication successful',
       detail: 'Successfully authenticated user',
       user,
+      csrfToken: req.session.csrfToken
     });
   } catch (err) {
     res.status(401).json({
