@@ -97,6 +97,9 @@ router.post('/login', async (req, res) => {
         title: 'Login Successful',
         detail: 'Successfully validated user credentials',
         csrfToken: session.csrfToken,
+        user: {
+          email: user.email
+        },
       });
   } catch (err) {
     res.status(401).json({
